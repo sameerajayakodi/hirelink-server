@@ -4,6 +4,7 @@ import com.samee.server.entity.User;
 import com.samee.server.repo.UserRepo;
 
 
+import com.samee.server.utils.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

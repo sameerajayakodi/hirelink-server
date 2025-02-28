@@ -1,9 +1,10 @@
 package com.samee.server.entity;
 
+import com.samee.server.utils.UserRoles;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import net.nighthawk.seekersconnect_backend.utils.UserRoles;
+
 
 import java.util.ArrayList;
 import java.util.List;

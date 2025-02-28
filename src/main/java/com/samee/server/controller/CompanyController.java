@@ -1,7 +1,8 @@
 package com.samee.server.controller;
 
-import net.nighthawk.seekersconnect_backend.dto.CompanyDto;
-import net.nighthawk.seekersconnect_backend.service.CompanyService;
+
+import com.samee.server.dto.CompanyDto;
+import com.samee.server.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

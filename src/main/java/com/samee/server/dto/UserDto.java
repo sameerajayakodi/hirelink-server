@@ -1,5 +1,6 @@
 package com.samee.server.dto;
 
+import com.samee.server.utils.UserRoles;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

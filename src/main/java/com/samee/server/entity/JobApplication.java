@@ -1,10 +1,11 @@
 package com.samee.server.entity;
 
+import com.samee.server.utils.ApplicationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.nighthawk.seekersconnect_backend.utils.ApplicationStatus;
+
 
 
 import java.time.LocalDateTime;

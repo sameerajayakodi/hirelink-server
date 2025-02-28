@@ -1,7 +1,9 @@
 package com.samee.server.config;
 
 
-import net.nighthawk.seekersconnect_backend.utils.filters.JwtAuthenticationFilter;
+
+import com.samee.server.utils.filters.JwtAuthenticationFilter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +36,11 @@ public class SecurityConfig {
                           JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtFilter = jwtAuthenticationFilter;
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
     @Bean

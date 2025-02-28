@@ -10,6 +10,7 @@ import com.samee.server.repo.JobRepo;
 import com.samee.server.repo.UserRepo;
 import com.samee.server.service.FileStorageService;
 import com.samee.server.service.JobApplicationService;
+import com.samee.server.utils.ApplicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

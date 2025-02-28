@@ -6,6 +6,8 @@ import com.samee.server.entity.User;
 import com.samee.server.repo.UserRepo;
 import com.samee.server.service.UserService;
 import com.samee.server.service.auth.JWTService;
+import com.samee.server.utils.Converter;
+import com.samee.server.utils.UserRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

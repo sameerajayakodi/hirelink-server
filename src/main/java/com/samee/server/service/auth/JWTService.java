@@ -1,5 +1,6 @@
 package com.samee.server.service.auth;
 
+import com.samee.server.utils.UserRoles;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

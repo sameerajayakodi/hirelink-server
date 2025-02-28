@@ -1,6 +1,7 @@
 package com.samee.server.controller;
 
-import net.nighthawk.seekersconnect_backend.service.DocumentService;
+import com.samee.server.service.DocumentService;
+
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;

@@ -3,6 +3,8 @@ package com.samee.server.controller;
 
 
 
+import com.samee.server.dto.JobApplicationDto;
+import com.samee.server.service.JobApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
