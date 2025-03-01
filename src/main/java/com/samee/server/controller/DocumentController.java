@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/documents")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class DocumentController {
 
     private final DocumentService documentService;
