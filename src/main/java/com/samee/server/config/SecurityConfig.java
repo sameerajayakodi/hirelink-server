@@ -1,7 +1,5 @@
 package com.samee.server.config;
 
-
-
 import com.samee.server.utils.filters.JwtAuthenticationFilter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +50,23 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/user/register", "/api/v1/user/login").permitAll()
                         // Company endpoints
                         .requestMatchers("/api/v1/company/register", "/api/v1/company/login").permitAll()
+                        // Trainer endpoints
+                        .requestMatchers("/api/v1/trainer/register", "/api/v1/trainer/login").permitAll()
+                        // Course endpoints - publicly accessible
+                        .requestMatchers("/api/v1/courses/all", "/api/v1/courses/{id}").permitAll()
+                        .requestMatchers("/api/v1/courses/category/**", "/api/v1/courses/search").permitAll()
+                        .requestMatchers("/api/v1/courses/trainer/{username}").permitAll()
+                        // Health check
                         .requestMatchers("/api/v1/health").permitAll()
+                        // Role-based access
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/user/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/company/**").hasAnyAuthority("ADMIN", "COMPANY")
                         .requestMatchers("/api/v1/employer/**").hasAuthority("EMPLOYER")
+                        // Trainer-specific endpoints requiring authentication
                         .requestMatchers("/api/v1/trainer/**").hasAuthority("TRAINER")
+                        .requestMatchers("/api/v1/courses/create", "/api/v1/courses/update/**", "/api/v1/courses/delete/**").hasAuthority("TRAINER")
+                        .requestMatchers("/api/v1/courses/trainer").hasAuthority("TRAINER")
                         .requestMatchers("/api/v1/seeker/**").hasAuthority("JOB_SEEKER")
                         .requestMatchers("/api/v1/documents/**").authenticated()
                         .anyRequest().authenticated())

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,7 +52,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public String login(CompanyDto companyDto) {
+    public Map<String, String> login(CompanyDto companyDto) {
         // Find company by name
         Optional<Company> optionalCompany = companyRepository.findByName(companyDto.getName());
 
@@ -66,9 +68,14 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         // Generate JWT token
-        return jwtService.generateToken(company.getName(), "COMPANY");
-    }
+        String token = jwtService.generateToken(company.getName(), "COMPANY");
 
+        // Create response with token
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+
+        return response;
+    }
     @Override
     public List<CompanyDto> getAllCompanies() {
         return companyRepository.findAll().stream()

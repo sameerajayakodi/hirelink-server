@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:5173" ,allowCredentials = "true")
 @RestController
 @RequestMapping("api/v1/company")
 public class CompanyController {
@@ -36,12 +38,9 @@ public class CompanyController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody CompanyDto companyDto) {
-        try {
-            return new ResponseEntity<>(companyService.login(companyDto), HttpStatus.OK);
-        } catch (Exception exception) {
-            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> loginCompany(@RequestBody CompanyDto companyDto) {
+        Map<String, String> tokenResponse = companyService.login(companyDto);
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @GetMapping("/get-all")
