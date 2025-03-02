@@ -72,7 +72,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/documents/download/**").permitAll()
                         // Application endpoints - add these rules
                         .requestMatchers("/api/v1/jobs/**").permitAll()
-                        .requestMatchers("/api/v1/applications/**").hasAuthority("COMPANY")
+                        .requestMatchers("/api/v1/applications/**").hasAnyAuthority("ADMIN" , "COMPANY" , "USER")
                         // Role-based access
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/user/**").hasAuthority("ADMIN")
