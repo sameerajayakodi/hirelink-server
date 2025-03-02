@@ -26,6 +26,21 @@ public class JobApplicationController {
         this.applicationService = applicationService;
     }
 
+    @PutMapping("/{applicationId}/status")
+    @PreAuthorize("hasAuthority('COMPANY')")
+    public ResponseEntity<JobApplicationDto> updateApplicationStatus(
+            @PathVariable Long applicationId,
+            @RequestParam String status) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String companyName = auth.getName(); // Assuming company name is stored in authentication
+
+        JobApplicationDto updatedApplication = applicationService.updateApplicationStatus(
+                applicationId, status, companyName);
+
+        return ResponseEntity.ok(updatedApplication);
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<JobApplicationDto> applyForJob(

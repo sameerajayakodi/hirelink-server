@@ -1,6 +1,5 @@
 package com.samee.server.service.impl;
 
-
 import com.samee.server.dto.CompanyDto;
 import com.samee.server.entity.Company;
 import com.samee.server.repo.CompanyRepo;
@@ -76,6 +75,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         return response;
     }
+
     @Override
     public List<CompanyDto> getAllCompanies() {
         return companyRepository.findAll().stream()
@@ -104,6 +104,46 @@ public class CompanyServiceImpl implements CompanyService {
         return companyRepository.findByName(name)
                 .map(this::convertToDto)
                 .orElseThrow(() -> new RuntimeException("Company not found with name: " + name));
+    }
+
+    @Override
+    public CompanyDto updateCompany(String name, CompanyDto companyDto) {
+        // Find company by name
+        Company company = companyRepository.findByName(name)
+                .orElseThrow(() -> new RuntimeException("Company not found with name: " + name));
+
+        // Update company fields (excluding name as it's used as an identifier)
+        // Only update fields that are provided in the DTO
+        if (companyDto.getEmail() != null) {
+            company.setEmail(companyDto.getEmail());
+        }
+
+        if (companyDto.getDescription() != null) {
+            company.setDescription(companyDto.getDescription());
+        }
+
+        if (companyDto.getIndustry() != null) {
+            company.setIndustry(companyDto.getIndustry());
+        }
+
+        if (companyDto.getLocation() != null) {
+            company.setLocation(companyDto.getLocation());
+        }
+
+        if (companyDto.getWebsite() != null) {
+            company.setWebsite(companyDto.getWebsite());
+        }
+
+        // Update password if provided
+        if (companyDto.getPassword() != null && !companyDto.getPassword().isEmpty()) {
+            company.setPassword(passwordEncoder.encode(companyDto.getPassword()));
+        }
+
+        // Save updated company
+        Company updatedCompany = companyRepository.save(company);
+
+        // Return updated company as DTO
+        return convertToDto(updatedCompany);
     }
 
     // Helper method to convert entity to DTO

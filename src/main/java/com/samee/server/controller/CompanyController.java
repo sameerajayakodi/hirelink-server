@@ -55,21 +55,46 @@ public class CompanyController {
 
     @GetMapping("/{name}")
     public ResponseEntity<?> getCompanyByName(@PathVariable String name) {
-        Optional<CompanyDto> company = Optional.ofNullable(companyService.getCompanyByName(name));
-        return company.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body((CompanyDto) Map.of("error", "Company not found")));
+        try {
+            CompanyDto company = companyService.getCompanyByName(name);
+            return ResponseEntity.ok(company);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/profile")
+    @PreAuthorize("hasAuthority('COMPANY')")
     public ResponseEntity<?> getCompanyProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String companyName = authentication.getName();
 
-        Optional<CompanyDto> company = Optional.ofNullable(companyService.getCompanyByName(companyName));
-        return company.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body((CompanyDto) Map.of("error", "Company profile not found")));
+        try {
+            CompanyDto company = companyService.getCompanyByName(companyName);
+            return ResponseEntity.ok(company);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/profile")
+    @PreAuthorize("hasAuthority('COMPANY')")
+    public ResponseEntity<?> updateCompanyProfile(@RequestBody CompanyDto companyDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String companyName = authentication.getName();
+
+        try {
+            CompanyDto updatedCompany = companyService.updateCompany(companyName, companyDto);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Company profile updated successfully!",
+                    "company", updatedCompany
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/delete/{name}")

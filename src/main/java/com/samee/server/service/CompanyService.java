@@ -13,4 +13,5 @@ public interface CompanyService {
     List<CompanyDto> getAllCompanies();
     CompanyDto deleteCompany(String name);
     CompanyDto getCompanyByName(String username);
+    CompanyDto updateCompany(String name, CompanyDto companyDto);
 }
