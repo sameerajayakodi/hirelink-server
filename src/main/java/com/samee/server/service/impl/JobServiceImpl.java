@@ -57,11 +57,6 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<JobDto> getJobsByCompany(String companyName) {
-        // Check if company exists first
-        companyRepo.findByName(companyName)
-                .orElseThrow(() -> new RuntimeException("Company not found"));
-
-        // Use findByCompanyName directly instead of finding by company ID
         List<Job> companyJobs = jobRepository.findByCompanyName(companyName);
         return companyJobs.stream()
                 .map(this::convertToDto)

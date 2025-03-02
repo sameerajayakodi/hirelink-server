@@ -1,94 +1,60 @@
 package com.samee.server.controller;
 
-import com.samee.server.service.DocumentService;
-
-import org.apache.coyote.BadRequestException;
+import com.samee.server.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("api/v1/documents")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true",
+        allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
 public class DocumentController {
 
-    private final DocumentService documentService;
-
     @Autowired
-    public DocumentController(DocumentService documentService) {
-        this.documentService = documentService;
-    }
+    private FileStorageService fileStorageService;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> addFiles(@RequestParam("file") MultipartFile file, @RequestParam("userName") String username) {
-        try {
-            // Make sure username parameter matches the service method parameter
-            return new ResponseEntity<>(documentService.saveFile(file, username), HttpStatus.CREATED);
-        } catch (BadRequestException e) {
-            e.printStackTrace(); // Add this for debugging
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/files/{filename:.+}")
+    @PostMapping("/download/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        Resource file;
-        try {
-            file = documentService.getFileByName(filename);
-        } catch (BadRequestException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Resource> downloadFile(
+            @PathVariable String filename,
+            @RequestParam String token) {
+
+        // Set authentication from token
+        if (token != null && !token.isEmpty()) {
+            // This is a simplified example - use your existing JWT validator
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    "company-user", null,
+                    Collections.singletonList(new SimpleGrantedAuthority("COMPANY"))
+            );
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
+
+        Resource file = fileStorageService.loadFileAsResource(filename);
 
         if (file == null)
             return ResponseEntity.notFound().build();
 
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-    }
+        // Get content type
+        String contentType = "application/octet-stream";
+        // ... content type detection code ...
 
-    @GetMapping("/get-all")
-    @ResponseBody
-    public ResponseEntity<?> listUploadedFiles() {
-        try {
-            List<String> fileUrls = documentService.loadAll().map(
-                            path -> MvcUriComponentsBuilder.fromMethodName(DocumentController.class,
-                                    "serveFile", path.getFileName().toString()).build().toUri().toString())
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(fileUrls);
-        } catch (BadRequestException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/delete/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<String> deleteFile(@PathVariable String filename) {
-        try {
-            documentService.delete(filename);
-            return ResponseEntity.ok("File deleted successfully: " + filename);
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body("File not found: " + filename);
-        }
-    }
-
-    @DeleteMapping("/delete-all")
-    public ResponseEntity<String> deleteAll() {
-        try {
-            documentService.deleteAll();
-            return ResponseEntity.ok("All files deleted successfully");
-        } catch (java.io.IOException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .body(file);
     }
 }

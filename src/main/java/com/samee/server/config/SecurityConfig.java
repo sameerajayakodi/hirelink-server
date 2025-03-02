@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -54,7 +55,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         // User endpoints
-                        .requestMatchers("/api/v1/user/register", "/api/v1/user/login").permitAll()
+                        .requestMatchers("/api/v1/user/register", "/api/v1/user/login" ).permitAll()
                         // Company endpoints
                         .requestMatchers("/api/v1/company/register", "/api/v1/company/login").permitAll()
                         // Trainer endpoints
@@ -65,6 +66,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/courses/trainer/{username}").permitAll()
                         // Health check
                         .requestMatchers("/api/v1/health").permitAll()
+                        // Important: Allow OPTIONS requests for all routes (CORS preflight)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // File download endpoints - allow public access to specific download endpoint
+                        .requestMatchers(HttpMethod.POST, "/api/v1/documents/download/**").permitAll()
+                        // Application endpoints - add these rules
+                        .requestMatchers("/api/v1/jobs/**").permitAll()
+                        .requestMatchers("/api/v1/applications/**").hasAuthority("COMPANY")
                         // Role-based access
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/user/**").hasAuthority("ADMIN")
@@ -99,7 +107,8 @@ public class SecurityConfig {
                 "Access-Control-Request-Method",
                 "Access-Control-Request-Headers"
         ));
-        configuration.setExposedHeaders(List.of("Authorization"));
+        // Important: expose the Content-Disposition header for downloads
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Disposition"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L); // 1 hour
 
