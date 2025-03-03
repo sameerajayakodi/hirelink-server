@@ -73,6 +73,11 @@ public class SecurityConfig {
                         // Application endpoints - add these rules
                         .requestMatchers("/api/v1/jobs/**").permitAll()
                         .requestMatchers("/api/v1/applications/**").hasAnyAuthority("ADMIN" , "COMPANY" , "USER")
+
+                        // NEW: Profile endpoints
+                        .requestMatchers("/api/v1/profile/user/**").permitAll() // Public profile viewing
+                        .requestMatchers("/api/v1/profile/**").authenticated() // Other profile operations require auth
+
                         // Role-based access
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/user/**").hasAuthority("ADMIN")
