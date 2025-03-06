@@ -1,6 +1,5 @@
 package com.samee.server.service.impl;
 
-
 import com.samee.server.dto.JobApplicationDto;
 import com.samee.server.entity.Job;
 import com.samee.server.entity.JobApplication;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -120,6 +120,43 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid application status: " + status);
         }
+    }
+
+    @Override
+    public boolean deleteApplication(Long applicationId, String username) {
+        // Find the application
+        Optional<JobApplication> applicationOpt = applicationRepository.findById(applicationId);
+        if (applicationOpt.isEmpty()) {
+            throw new RuntimeException("Application not found");
+        }
+
+        JobApplication application = applicationOpt.get();
+
+        // Verify user owns this application
+        if (!application.getUser().getUsername().equals(username)) {
+            throw new RuntimeException("You are not authorized to delete this application");
+        }
+
+        // Only allow deletion if application is still PENDING
+        if (application.getStatus() != ApplicationStatus.PENDING) {
+            throw new RuntimeException("Cannot withdraw application that is already " + application.getStatus());
+        }
+
+        // Delete the resume file if it exists
+        if (application.getResumeUrl() != null && !application.getResumeUrl().isEmpty()) {
+            try {
+                // If you have a method to delete files in your FileStorageService
+                // fileStorageService.deleteFile(application.getResumeUrl());
+                // If not, you might want to add one or leave it as is
+            } catch (Exception e) {
+                // Log the error but continue with deletion
+                System.err.println("Failed to delete resume file: " + e.getMessage());
+            }
+        }
+
+        // Delete the application
+        applicationRepository.delete(application);
+        return true;
     }
 
     private JobApplicationDto convertToDto(JobApplication application) {

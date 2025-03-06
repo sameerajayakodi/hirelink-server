@@ -1,6 +1,5 @@
 package com.samee.server.service;
 
-
 import com.samee.server.dto.JobApplicationDto;
 
 import java.util.List;
@@ -54,4 +53,13 @@ public interface JobApplicationService {
      * @return The updated application
      */
     JobApplicationDto updateApplicationStatus(Long applicationId, String status, String companyName);
+
+    /**
+     * Delete a job application
+     *
+     * @param applicationId The ID of the application to delete
+     * @param username The username of the user attempting to delete
+     * @return true if deletion was successful
+     */
+    boolean deleteApplication(Long applicationId, String username);
 }
