@@ -1,8 +1,5 @@
 package com.samee.server.controller;
 
-
-
-
 import com.samee.server.dto.JobApplicationDto;
 import com.samee.server.service.JobApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/applications")
@@ -69,5 +68,18 @@ public class JobApplicationController {
         return ResponseEntity.ok(applications);
     }
 
-    // Add endpoints for updating application status (for companies)
+    @DeleteMapping("/{applicationId}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<Map<String, Object>> deleteApplication(@PathVariable Long applicationId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        boolean deleted = applicationService.deleteApplication(applicationId, username);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", deleted);
+        response.put("message", "Application successfully withdrawn");
+
+        return ResponseEntity.ok(response);
+    }
 }
