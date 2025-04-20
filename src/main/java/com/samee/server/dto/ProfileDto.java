@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProfileDto {
     private String id;
-    private String username; // Username of the associated user
+    private String username;
     private String email;
     private String phone;
     private String fullName;
