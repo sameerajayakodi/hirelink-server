@@ -17,6 +17,6 @@ public class JobApplicationDto {
     private LocalDateTime appliedDate;
     private String status;
     private String coverLetter;
-    private MultipartFile resume; // For file upload
-    private String resumeUrl;     // For retrieval
+    private MultipartFile resume;
+    private String resumeUrl;
 }
