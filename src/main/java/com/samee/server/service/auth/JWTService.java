@@ -22,23 +22,19 @@ public class JWTService {
 
     @Value("${jwt.secret}")
     private String SECRET_KEY;
-
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-
     public UserRoles extractRole(String token) {
         Claims claims = extractAllClaims(token);
         String roleStr = claims.get("role", String.class);
         return UserRoles.valueOf(roleStr);
     }
-
     public String generateToken(String userName, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
         return createToken(claims, userName);
     }
-
     private String createToken(Map<String, Object> claims, String userName) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -48,17 +44,14 @@ public class JWTService {
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
